@@ -136,7 +136,13 @@ endfunction
 
 function! repeat#wrap(command,count)
     let preserve = (g:repeat_tick == b:changedtick)
-    call feedkeys((a:count ? a:count : '').a:command, 'ntix')
+    try
+        call feedkeys((a:count ? a:count : '').a:command, 'ntix')
+    catch /^Vim.*/
+        echohl ErrorMsg
+        echom matchstr(v:exception, 'Vim.\{-}:\zs.*')
+        echohl None
+    endtry
     if preserve
         let g:repeat_tick = b:changedtick
     endif
